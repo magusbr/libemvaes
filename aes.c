@@ -182,6 +182,10 @@ int aes_evp_crypt(char* plaintext, char* ciphertext, const char* password, int e
     int decryptedtext_len, ciphertext_len;
     char b64buf[SALT_HEADER_SIZE+calcEncodeLength(strlen(password))+1];
 
+    if (((plaintext[0] == '\0') && (enc_dec == AES_EVP_ENCRYPT))
+        || ((ciphertext[0] == '\0') && (enc_dec == AES_EVP_DECRYPT)))
+        return -1;
+
     ul_salt = urandom();
     if (ul_salt == -1)
     {
