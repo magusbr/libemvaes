@@ -7,11 +7,12 @@ int main(int argc, char** argv)
 {
     char plaintext[256] = "pompom";
     char ciphertext[256] = {0};
+    char key[256] = "teste";
 
     if(0 != aes_evp_crypt(
         plaintext,
         ciphertext,
-        "teste",
+        key,
         AES_EVP_ENCRYPT))
     {
         printf("error\n");
@@ -26,7 +27,7 @@ int main(int argc, char** argv)
     if(0 != aes_evp_crypt(
         plaintext,
         ciphertext,
-        "teste",
+        key,
         AES_EVP_DECRYPT))
     {
         printf("error\n");
