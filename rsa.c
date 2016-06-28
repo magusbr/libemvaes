@@ -8,6 +8,9 @@
 #include "base64.h"
 #include "rsa.h"
 
+// from
+// http://hayageek.com/rsa-encryption-decryption-openssl-c/
+
 int padding = RSA_PKCS1_PADDING;
 #define PVKF "/home/magusbr/data/privatekey.pem"
 #define PBKF "/home/magusbr/data/publickey.pem"
