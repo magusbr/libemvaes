@@ -3,11 +3,15 @@
 #include <string.h>
 #include "aes.h"
 
+int rsa_main();
+
 int main(int argc, char** argv)
 {
     char plaintext[256] = "pompom";
     char ciphertext[256] = {0};
     char key[256] = "teste";
+
+    printf("AES\n");
 
     if(0 != aes_evp_crypt(
         plaintext,
@@ -36,6 +40,10 @@ int main(int argc, char** argv)
     {
         printf("Decrypted text is: %s\n", plaintext);
     }
+
+    printf("RSA\n");
+
+    rsa_main();
 
     return 0;
 }
