@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <math.h>
 
-int Base64Encode(const unsigned char* buffer, int length, char* b64text) {
+int Base64Encode(char* inout, int length) {
     //Encodes a binary safe base 64 string
     BIO *bio, *b64;
     BUF_MEM *bufferPtr;
@@ -18,13 +18,13 @@ int Base64Encode(const unsigned char* buffer, int length, char* b64text) {
 
     //Ignore newlines - write everything in one line
     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
-    BIO_write(bio, buffer, length);
+    BIO_write(bio, inout, length);
     BIO_flush(bio);
     BIO_get_mem_ptr(bio, &bufferPtr);
 
     //*b64text = (char*)malloc(bufferPtr->length+1);
-    memcpy(b64text, bufferPtr->data, bufferPtr->length);
-    b64text[bufferPtr->length] = 0;
+    memcpy(inout, bufferPtr->data, bufferPtr->length);
+    inout[bufferPtr->length] = 0;
 
     // avoid deallocation of buffer
     //BIO_set_close(bio, BIO_NOCLOSE);
@@ -55,25 +55,28 @@ int calcEncodeLength(int length)
     return 4*(int)ceil((float)length/(float)3);
 }
 
-int Base64Decode(char* b64message, unsigned char* buffer, int* length) {
+int Base64Decode(char* inout, int* length) {
     //Decodes a base64 encoded string
     BIO *bio, *b64;
 
-    int decodeLen = calcDecodeLength(b64message);
+    int decodeLen = calcDecodeLength(inout);
     //*buffer = (unsigned char*)malloc(decodeLen + 1);
-    buffer[decodeLen] = '\0';
+    char buffer[decodeLen];
 
-    bio = BIO_new_mem_buf(b64message, -1);
+    bio = BIO_new_mem_buf(inout, -1);
     b64 = BIO_new(BIO_f_base64());
     bio = BIO_push(b64, bio);
 
     //Do not use newlines to flush buffer
     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
-    *length = BIO_read(bio, buffer, strlen(b64message));
+    *length = BIO_read(bio, buffer, strlen(inout));
     BIO_free_all(bio);
 
     //length should equal decodeLen, else something went horribly wrong
     if (*length != decodeLen)
         return -1;
+
+    memcpy(inout, buffer, *length);
+
     return (0); //success
 }

@@ -21,16 +21,23 @@ int aes_evp_cipher_add_salt(unsigned char* cipher, int* size, char* salt)
 {
     const char* salt_header_prefix = "Salted__";
     char* salt_header[SALT_HEADER_SIZE+1];
-    unsigned char tmp_cipher[*size];
     sprintf((char*)salt_header,
         "%s%.*s",
         salt_header_prefix,
         (int)(SALT_HEADER_SIZE-strlen(salt_header_prefix)), // whats left after prefix
         (char*)salt);
 
-    memcpy(tmp_cipher, cipher, *size);
-    memcpy(cipher, salt_header, SALT_HEADER_SIZE);
-    memcpy(cipher+SALT_HEADER_SIZE, tmp_cipher, *size);
+    if (*size == 0)
+    {
+        memcpy(cipher, salt_header, SALT_HEADER_SIZE);
+    }
+    else
+    {
+        unsigned char tmp_cipher[*size];
+        memcpy(tmp_cipher, cipher, *size);
+        memcpy(cipher, salt_header, SALT_HEADER_SIZE);
+        memcpy(cipher+SALT_HEADER_SIZE, tmp_cipher, *size);
+    }
 
     *size += SALT_HEADER_SIZE;
 
@@ -180,7 +187,6 @@ int aes_evp_crypt(char* plaintext, char* ciphertext, const char* password, int e
     unsigned char key[EVP_MAX_KEY_LENGTH], iv[EVP_MAX_IV_LENGTH];
 
     int decryptedtext_len, ciphertext_len;
-    char b64buf[SALT_HEADER_SIZE+calcEncodeLength(strlen(password))+1];
 
     if (((plaintext[0] == '\0') && (enc_dec == AES_EVP_ENCRYPT))
         || ((ciphertext[0] == '\0') && (enc_dec == AES_EVP_DECRYPT)))
@@ -205,7 +211,8 @@ int aes_evp_crypt(char* plaintext, char* ciphertext, const char* password, int e
     if (enc_dec == AES_EVP_ENCRYPT)
     {
         // generate key and iv using salt
-        sprintf(salt, "%8.8lu", ul_salt) ;
+        // need to use snprintf, because X. limits only for %s
+        snprintf(salt, 9, "%8.8lu", ul_salt);
         pass_to_key(
             key,
             iv,
@@ -235,8 +242,7 @@ int aes_evp_crypt(char* plaintext, char* ciphertext, const char* password, int e
             BIO_dump_fp (stdout, (const char *)ciphertext, ciphertext_len);
         #endif
 
-        Base64Encode((unsigned char*)ciphertext, ciphertext_len, b64buf);
-        strcpy((char*)ciphertext, b64buf);
+        Base64Encode((unsigned char*)ciphertext, ciphertext_len);
         ciphertext_len = strlen(ciphertext);
 
         #ifdef __DEBUG__
@@ -247,10 +253,10 @@ int aes_evp_crypt(char* plaintext, char* ciphertext, const char* password, int e
     else
     {
         ciphertext_len = strlen(ciphertext);
-        Base64Decode((char*)ciphertext, (unsigned char*)b64buf, &ciphertext_len);
+        Base64Decode((char*)ciphertext, &ciphertext_len);
 
         // generate key and iv using obtained salt
-        memcpy(salt, &b64buf[8], 8);
+        memcpy(salt, &ciphertext[8], 8);
         salt[8] = 0;
         pass_to_key(
             key,
@@ -260,13 +266,12 @@ int aes_evp_crypt(char* plaintext, char* ciphertext, const char* password, int e
 
         #ifdef __DEBUG__
             printf("Salted ciphertext hex is:\n");
-            BIO_dump_fp (stdout, (const char *)b64buf, ciphertext_len);
+            BIO_dump_fp (stdout, (const char *)ciphertext, ciphertext_len);
         #endif
         ciphertext_len -= SALT_HEADER_SIZE;
-        memcpy(ciphertext, &b64buf[SALT_HEADER_SIZE], ciphertext_len);
         /* Decrypt the ciphertext */
         decryptedtext_len = aes_evp_decrypt(
-            (unsigned char*)ciphertext,
+            (unsigned char*)ciphertext+SALT_HEADER_SIZE,
             ciphertext_len,
             key,
             iv,
@@ -285,3 +290,4 @@ int aes_evp_crypt(char* plaintext, char* ciphertext, const char* password, int e
     aes_evp_cleanup();
     return 0;
 }
+

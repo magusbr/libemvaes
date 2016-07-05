@@ -45,5 +45,32 @@ int main(int argc, char** argv)
 
     rsa_main();
 
+
+    printf("AES LARGE\n");
+
+    strcpy(plaintext, "pompom");
+    memset(ciphertext, 0, sizeof(ciphertext));
+    aes_crypt_large_init(plaintext, ciphertext, key);
+    printf("1 %s\n", ciphertext);
+
+    strcpy(plaintext, "mopmop1");
+    memset(ciphertext, 0, sizeof(ciphertext));
+    aes_crypt_large_step(plaintext, ciphertext);
+    printf("2 %s\n", ciphertext);
+
+    strcpy(plaintext, "mopmop2");
+    memset(ciphertext, 0, sizeof(ciphertext));
+    aes_crypt_large_step(plaintext, ciphertext);
+    printf("3 %s\n", ciphertext);
+
+    strcpy(plaintext, "e tal");
+    memset(ciphertext, 0, sizeof(ciphertext));
+    aes_crypt_large_step(plaintext, ciphertext);
+    printf("4 %s\n", ciphertext);
+
+    memset(ciphertext, 0, sizeof(ciphertext));
+    aes_crypt_large_end(ciphertext);
+    printf("5 %s\n", ciphertext);
+
     return 0;
 }

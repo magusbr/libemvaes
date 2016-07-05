@@ -68,7 +68,7 @@ RSA* createRSA(unsigned char * key,int public)
     if (keybio==NULL)
     {
         #ifdef __DEBUG__
-            printf(stderr, "Failed to create key BIO\n");
+            fprintf(stderr, "Failed to create key BIO\n");
         #endif
         return 0;
     }
@@ -263,7 +263,6 @@ int rsa_main()
 
 int rsa_crypt(char* plaintext, char* ciphertext, int enc_dec)
 {
-    char b64buf[2048] = {0};
     int decryptedtext_len, ciphertext_len;
 
     /* Initialise the library */
@@ -292,10 +291,10 @@ int rsa_crypt(char* plaintext, char* ciphertext, int enc_dec)
             BIO_dump_fp (stdout, (const char *)ciphertext, ciphertext_len);
         #endif
 
-        Base64Encode((unsigned char*)ciphertext, ciphertext_len, b64buf);
-        strcpy((char*)ciphertext, b64buf);
+        Base64Encode((unsigned char*)ciphertext, ciphertext_len);
         ciphertext_len = strlen(ciphertext);
-                                                                                                                        #ifdef __DEBUG__
+
+        #ifdef __DEBUG__
             // base64
             printf("Ciphertext is: %s\n", ciphertext);
         #endif  
@@ -303,14 +302,12 @@ int rsa_crypt(char* plaintext, char* ciphertext, int enc_dec)
     else
     {
         ciphertext_len = strlen(ciphertext);
-        Base64Decode((char*)ciphertext, (unsigned char*)b64buf, &ciphertext_len);
+        Base64Decode((char*)ciphertext, &ciphertext_len);
 
         #ifdef __DEBUG__
             printf("Ciphertext hex is:\n");
-            BIO_dump_fp (stdout, (const char *)b64buf, ciphertext_len);
+            BIO_dump_fp (stdout, (const char *)ciphertext, ciphertext_len);
         #endif
-
-        memcpy(ciphertext, b64buf, ciphertext_len);
 
         decryptedtext_len = private_decrypt(
             (unsigned char*)ciphertext,

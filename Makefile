@@ -3,7 +3,7 @@ CC=gcc
 #CFLAGS=-I. -Wall -D__DEBUG__ -DDEBUG -DDEBUG_ITER
 CFLAGS=-I. -Wall
 LDFLAGS=-lssl -lcrypto -lm
-OBJ = aes.o base64.o urandom.o sha256.o rsa.o
+OBJ = aes.o aes_large.o base64.o urandom.o sha256.o rsa.o
 DEMO_OBJ = main.o
 
 LIBRARY = libemvaes.a

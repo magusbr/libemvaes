@@ -2,8 +2,8 @@
 #define __BASE64_INC__
 
 int calcEncodeLength(int length);
-int Base64Encode(const unsigned char* buffer, int length, char* b64text);
-int Base64Decode(char* b64message, unsigned char* buffer, int* length);
+int Base64Encode(unsigned char* inout, int length);
+int Base64Decode(char* inout, int* length);
 
 
 #endif
