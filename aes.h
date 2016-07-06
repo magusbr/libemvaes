@@ -17,5 +17,10 @@ int aes_crypt_large_init(char* plaintext, char* ciphertext, const char* password
 int aes_crypt_large_step(char* plaintext, char* ciphertext);
 int aes_crypt_large_end(char* ciphertext);
 
+// need to make sure first cirphertext contain salt (24) + 1 character
+int aes_decrypt_large_init(char* plaintext, char* ciphertext, const char* password);
+int aes_decrypt_large_step(char* plaintext, char* ciphertext);
+int aes_decrypt_large_end(char* plaintext);
+
 
 #endif // __AES_EVP_INC__
