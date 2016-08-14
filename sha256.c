@@ -11,7 +11,7 @@
 /*
 static unsigned char buffer[65];
 sha256("string", buffer);
-printf("%s\n", buffer);
+fprintf(stderr, "%s\n", buffer);
 */
 
 void sha256(char *string, char outputBuffer[65])

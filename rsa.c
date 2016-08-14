@@ -188,7 +188,7 @@ int rsa_main_demo()
     }
 
     #ifdef __DEBUG__
-        printf("Encrypted length =%d\n",encrypted_length);
+        fprintf(stderr, "Encrypted length =%d\n",encrypted_length);
     #endif
 
     int decrypted_length = private_decrypt((unsigned char*)encrypted,encrypted_length,(unsigned char*)privateKey, decrypted);
@@ -198,8 +198,8 @@ int rsa_main_demo()
         exit(0);
     }
     #ifdef __DEBUG__
-        printf("Decrypted Text =%s\n",decrypted);
-        printf("Decrypted Length =%d\n",decrypted_length);
+        fprintf(stderr, "Decrypted Text =%s\n",decrypted);
+        fprintf(stderr, "Decrypted Length =%d\n",decrypted_length);
     #endif
 
     encrypted_length= private_encrypt((unsigned char*)plainText,strlen(plainText),(unsigned char*)privateKey,encrypted);
@@ -209,7 +209,7 @@ int rsa_main_demo()
         exit(0);
     }
     #ifdef __DEBUG__
-        printf("Encrypted length =%d\n",encrypted_length);
+        fprintf(stderr, "Encrypted length =%d\n",encrypted_length);
     #endif
 
     decrypted_length = public_decrypt((unsigned char*)encrypted,encrypted_length,(unsigned char*)publicKey, decrypted);
@@ -219,8 +219,8 @@ int rsa_main_demo()
         exit(0);
     }
     #ifdef __DEBUG__
-        printf("Decrypted Text =%s\n",decrypted);
-        printf("Decrypted Length =%d\n",decrypted_length);
+        fprintf(stderr, "Decrypted Text =%s\n",decrypted);
+        fprintf(stderr, "Decrypted Length =%d\n",decrypted_length);
     #endif
 
     return 0;
@@ -237,10 +237,11 @@ int rsa_main()
         ciphertext,
         RSA_ENCRYPT))
     {
-        printf("error\n");
+        fprintf(stderr, "error\n");
     }
     else
-    {                                                                                                                   printf("Ciphertext is: %s\n", ciphertext);
+    {
+        fprintf(stderr, "Ciphertext is: %s\n", ciphertext);
     }
 
     memset(plaintext, 0, sizeof(plaintext));
@@ -250,11 +251,11 @@ int rsa_main()
         ciphertext,
         RSA_DECRYPT))
     {
-        printf("error\n");
+        fprintf(stderr, "error\n");
     }
     else
     {
-        printf("Decrypted text is: %s\n", plaintext);
+        fprintf(stderr, "Decrypted text is: %s\n", plaintext);
     }
 
     return 0;
@@ -287,8 +288,8 @@ int rsa_crypt(char* plaintext, char* ciphertext, int enc_dec)
 
         #ifdef __DEBUG__
             // Dump hex
-            printf("ciphertext hex is:\n");
-            BIO_dump_fp (stdout, (const char *)ciphertext, ciphertext_len);
+            fprintf(stderr, "ciphertext hex is:\n");
+            BIO_dump_fp (stderr, (const char *)ciphertext, ciphertext_len);
         #endif
 
         Base64Encode((unsigned char*)ciphertext, ciphertext_len);
@@ -296,7 +297,7 @@ int rsa_crypt(char* plaintext, char* ciphertext, int enc_dec)
 
         #ifdef __DEBUG__
             // base64
-            printf("Ciphertext is: %s\n", ciphertext);
+            fprintf(stderr, "Ciphertext is: %s\n", ciphertext);
         #endif  
     }
     else
@@ -305,8 +306,8 @@ int rsa_crypt(char* plaintext, char* ciphertext, int enc_dec)
         Base64Decode((char*)ciphertext, &ciphertext_len);
 
         #ifdef __DEBUG__
-            printf("Ciphertext hex is:\n");
-            BIO_dump_fp (stdout, (const char *)ciphertext, ciphertext_len);
+            fprintf(stderr, "Ciphertext hex is:\n");
+            BIO_dump_fp (stderr, (const char *)ciphertext, ciphertext_len);
         #endif
 
         decryptedtext_len = private_decrypt(
@@ -326,8 +327,8 @@ int rsa_crypt(char* plaintext, char* ciphertext, int enc_dec)
 
         #ifdef __DEBUG__
             // Show the decrypted text
-            printf("Decrypted text is:\n");
-            printf("%s\n", plaintext);
+            fprintf(stderr, "Decrypted text is:\n");
+            fprintf(stderr, "%s\n", plaintext);
         #endif
     }
 

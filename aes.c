@@ -82,10 +82,10 @@ int pass_to_key(unsigned char* key, unsigned char* iv, unsigned char* salt, unsi
 
     #ifdef __DEBUG__
         int i;
-        printf("Key: ");
-        for(i=0; i<cipher->key_len; ++i) { printf("%02x", key[i]); } printf("\n");
-        printf("IV: ");
-        for(i=0; i<cipher->iv_len; ++i) { printf("%02x", iv[i]); } printf("\n");
+        fprintf(stderr, "Key: ");
+        for(i=0; i<cipher->key_len; ++i) { fprintf(stderr, "%02x", key[i]); } fprintf(stderr, "\n");
+        fprintf(stderr, "IV: ");
+        for(i=0; i<cipher->iv_len; ++i) { fprintf(stderr, "%02x", iv[i]); } fprintf(stderr, "\n");
     #endif
 
     return 0;
@@ -196,7 +196,7 @@ int aes_evp_crypt(char* plaintext, char* ciphertext, const char* password, int e
     if (ul_salt == -1)
     {
         #ifdef __DEBUG__
-            printf("error generating salt\n");
+            fprintf(stderr, "error generating salt\n");
         #endif
         return -1;
     }
@@ -238,8 +238,8 @@ int aes_evp_crypt(char* plaintext, char* ciphertext, const char* password, int e
 
         #ifdef __DEBUG__
             // Dump hex
-            printf("Salted ciphertext hex is:\n");
-            BIO_dump_fp (stdout, (const char *)ciphertext, ciphertext_len);
+            fprintf(stderr, "Salted ciphertext hex is:\n");
+            BIO_dump_fp (stderr, (const char *)ciphertext, ciphertext_len);
         #endif
 
         Base64Encode((unsigned char*)ciphertext, ciphertext_len);
@@ -247,7 +247,7 @@ int aes_evp_crypt(char* plaintext, char* ciphertext, const char* password, int e
 
         #ifdef __DEBUG__
             // base64
-            printf("Ciphertext is: %s\n", ciphertext);
+            fprintf(stderr, "Ciphertext is: %s\n", ciphertext);
         #endif
     }
     else
@@ -265,8 +265,8 @@ int aes_evp_crypt(char* plaintext, char* ciphertext, const char* password, int e
             (unsigned char*)password);
 
         #ifdef __DEBUG__
-            printf("Salted ciphertext hex is:\n");
-            BIO_dump_fp (stdout, (const char *)ciphertext, ciphertext_len);
+            fprintf(stderr, "Salted ciphertext hex is:\n");
+            BIO_dump_fp (stderr, (const char *)ciphertext, ciphertext_len);
         #endif
         ciphertext_len -= SALT_HEADER_SIZE;
         /* Decrypt the ciphertext */
@@ -282,8 +282,8 @@ int aes_evp_crypt(char* plaintext, char* ciphertext, const char* password, int e
 
         #ifdef __DEBUG__
             // Show the decrypted text
-            printf("Decrypted text is:\n");
-            printf("%s\n", plaintext);
+            fprintf(stderr, "Decrypted text is:\n");
+            fprintf(stderr, "%s\n", plaintext);
         #endif
     }
 

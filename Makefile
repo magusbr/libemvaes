@@ -1,6 +1,6 @@
 CC=gcc
 #to view debug prints (too much)
-#CFLAGS=-I. -Wall -D__DEBUG__ -DDEBUG -DDEBUG_ITER
+#CFLAGS=-I. -g -Wall -D__DEBUG__ -DDEBUG -DDEBUG_ITER
 CFLAGS=-I. -Wall
 LDFLAGS=-lssl -lcrypto -lm
 OBJ = aes.o aes_large.o base64.o urandom.o sha256.o rsa.o

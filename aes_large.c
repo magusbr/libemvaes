@@ -48,7 +48,7 @@ int aes_crypt_large_init(char* plaintext, char* ciphertext, const char* password
     if (ul_salt == -1)
     {
         #ifdef __DEBUG__
-            printf("error generating salt\n");
+            fprintf(stderr, "error generating salt\n");
         #endif
         return -1;
     }
@@ -104,8 +104,8 @@ int aes_crypt_large_init(char* plaintext, char* ciphertext, const char* password
 
     #ifdef __DEBUG__
         // Dump hex
-        printf("Salted ciphertext hex is:\n");
-        BIO_dump_fp (stdout, (const char *)ciphertext, ciphertext_len);
+        fprintf(stderr, "Salted ciphertext hex is:\n");
+        BIO_dump_fp (stderr, (const char *)ciphertext, ciphertext_len);
     #endif
 
     if (ciphertext_len)
@@ -144,8 +144,8 @@ int aes_crypt_large_step(char* plaintext, char* ciphertext)
 
     #ifdef __DEBUG__
         // Dump hex
-        printf("Salted ciphertext hex is:\n");
-        BIO_dump_fp (stdout, (const char *)ciphertext+leftover_len, ciphertext_len);
+        fprintf(stderr, "Salted ciphertext hex is:\n");
+        BIO_dump_fp (stderr, (const char *)ciphertext+leftover_len, ciphertext_len);
     #endif
 
     if (ciphertext_len)
@@ -243,7 +243,9 @@ int aes_decrypt_large_init(char* plaintext, char* ciphertext, const char* passwo
     OpenSSL_add_all_algorithms();
     OPENSSL_config(NULL);
     
+    fprintf(stderr, "ciphertext befor decode [%s]\n", ciphertext);
     Base64Decode((char*)ciphertext, &ciphertext_len);
+    fprintf(stderr, "ciphertext after decode [%s]\n", ciphertext);
 
     // generate key and iv using obtained salt
     memcpy(salt, &ciphertext[8], 8);
@@ -255,8 +257,8 @@ int aes_decrypt_large_init(char* plaintext, char* ciphertext, const char* passwo
         (unsigned char*)password);
 
     #ifdef __DEBUG__
-        printf("Salted ciphertext hex is:\n");
-        BIO_dump_fp (stdout, (const char *)ciphertext+SALT_HEADER_SIZE, ciphertext_len);
+        fprintf(stderr, "Salted ciphertext hex is:\n");
+        BIO_dump_fp (stderr, (const char *)ciphertext+SALT_HEADER_SIZE, ciphertext_len);
     #endif
     ciphertext_len -= SALT_HEADER_SIZE;
 
@@ -295,18 +297,22 @@ int aes_decrypt_large_step(char* plaintext, char* ciphertext)
     Base64Decode((char*)ciphertext, &ciphertext_len);
 
     #ifdef __DEBUG__
-        printf("Ciphertext hex is:\n");
-        BIO_dump_fp (stdout, (const char *)ciphertext, ciphertext_len);
+        fprintf(stderr, "Ciphertext hex is:\n");
+        BIO_dump_fp (stderr, (const char *)ciphertext, ciphertext_len);
     #endif
-    
+
+    char plaintext_buf[999999];
     if(1 != EVP_DecryptUpdate(
         ctx_large,
-        (unsigned char*)plaintext,
+        (unsigned char*)plaintext_buf,
         &plaintext_len,
         (unsigned char*)ciphertext,
         ciphertext_len)
     )
         return aes_crypt_large_error();
+
+    strncpy(plaintext, plaintext_buf, plaintext_len);
+    plaintext[plaintext_len] = 0;    
     
     return plaintext_len;
 }
